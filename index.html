@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+		<title>Shit Chat</title>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="jquery-3.1.1.min.js" ></script>
+		
+		<style type="text/css">
+				body{
+		
+					background: url(bg.jpg) no-repeat center center fixed; 
+					-webkit-background-size: cover;
+					-moz-background-size: cover;
+					-o-background-size: cover;
+					background-size: cover;
+					background-color: #34495e;
+					margin:px ;
+
+				}
+				.main{
+					margin-top: 5%;
+
+				}
+				.online{
+					background-color: #212223;
+					padding: 10px;
+					height: 550px;
+				}
+				.chatarea{
+					height: 550px;
+					background-color: #ededed;
+				
+
+				}
+				.chat{
+					height: 480px;
+					overflow-y: auto;
+
+				}
+				#logged{
+					height: 550px;
+					overflow-y: auto;
+				}
+			.list-group-item{
+				color: #000;
+				text-transform: capitalize;
+				text-align: left;
+
+			}
+			footer{
+				margin-top: 15px;
+				margin-left: 75%;
+				color: #fff;
+				font-size: 13pt;
+			}
+		</style>
+
+</head>
+<body>
+
+<div class="container ">
+
+<div class="row main" >
+	 <div class="col-md-3 online text-center" id="logged">
+	 	<form class="form-group" id="userForm">
+	 	<div class="username" id="nick">
+	 		
+	 		<input class="form-control" id="username" placeholder="Nickname" />
+	 		<br>
+	 		<button class="btn btn-primary ">Login</button>
+	 	</div>	
+	 	</form>
+	 	<h3><span style="color:#a7a9ac;"><strong> USERS<span style="color:#fff;"> ONLINE</span></strong> </span></h3>
+	 	<ul id="users" class="list-group"></ul>
+	 </div>
+	 <div class="col-md-9 chatarea">
+	 	<div class="chat " id="chat">
+	 	<ul>
+	 		
+	 	</ul>
+	 		
+	 	</div>
+	 	<form class="form-group" id="messageForm">
+	 	<div class="row">
+	 		<div class="col-md-10"><textarea class="form-control" id="message" placeholder="Type your message" ></textarea></div>
+	 		<br>
+	 		<div class="col-md-2"><button class="btn btn-primary ">Send</button></div>
+	 	</div>	
+	 	</form>
+	 
+	 </div>
+
+	 
+</div>
+
+<footer>
+	 	<p><span style="color:#a7a9ac;">Made by</span><b> PRIYATHAM KATTA</b></p>
+	 </footer>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+$(document).ready(function(){
+  var socket = io();
+  var $users = $('#users');
+  var $username = $('#username');
+ 	
+
+  $('#messageForm').submit(function(){
+    socket.emit('chat message', $('#message').val());
+    
+      $('#message').val('');
+      return false;    
+  });
+  socket.on('chat message', function(data){
+    $('#chat').append(' <div class="well"><strong>'+data.user+'</strong>'+': '+data.msg+'</div> ');
+  });    
+
+  $("#userForm").submit(function(data){
+  	data.preventDefault();
+ 	
+ 	socket.emit('new user',$("#username").val(),function(data){
+ 		if(data){
+ 			$("#nick").hide();	 
+ 		//	$("#chat").show();	 	
+
+ 		}
+ 	});
+ 	$("#username").val('');
+
+  });
+
+  socket.on('get users' , function(data){
+
+  	var html='';
+  	for( i=0 ; i<data.length ; i++){
+
+  		html += '<li class="list-group-item">'+data[i]+'</li>';
+   	}
+   	$users.html(html);
+  });
+
+  });
+</script>
+
+
+
+</body> 
+</html>
